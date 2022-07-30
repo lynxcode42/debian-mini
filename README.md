@@ -1,10 +1,6 @@
 ## ATTENTION
 * * *
-<style>
-red { color: red }
-yellow { color: yellow }
-</style>
-<red>Be extremely carefull, if you intend to use the option to fully automate the base install with the preseed files ***preseed_bull_{DE|EN}.cfg***. Reconsider only use them in a VM as shown in the video. If you don't fully grasp the part '**d-i partman-auto/choose_recipe** ' in those files then it is best to skip this option. Otherwise your data can be potentioly get lost. You've been warned.</red>
+![](https://github.com/lynxcode42/debian-mini/raw/main/images/attention_warn.png)
 
 # debian-mini
 Minimal Debian installs
