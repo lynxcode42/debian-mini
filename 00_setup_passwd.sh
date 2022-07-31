@@ -5,7 +5,7 @@ DEBMINIDIR="$HOME/debian-mini"
 GITDIRTAG="d490a35d36030592839f24e468a5b818c919943967012037d6ab3d65d030ef7f.TAG"
 
 echo -e "======================================================================="
-echo -e "00_setup_base.sh"
+echo -e "00_setup_passwd.sh"
 echo -e "======================================================================="
 echo -e "[_BEGIN_] >>> :" `date` "\n"
 
