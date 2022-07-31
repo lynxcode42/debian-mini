@@ -2,9 +2,10 @@
     "auto_install": [
         {
             "image": "/_ISOs_vrventoy/deibian-firmware-11.4.0-amd64-netinst.iso",
-            "template": "/ventoy/scripts/preseed_bull_DE.cfg",
-            "template": "/ventoy/scripts/preseed_bull_EN.cfg",
-            "autosel": 1
+            "template": [
+                "/ventoy/scripts/preseed_bull_DE.cfg",
+                "/ventoy/scripts/preseed_bull_EN.cfg"
+            ]
         }
     ],
  
