@@ -3,8 +3,12 @@
 ![](https://github.com/lynxcode42/debian-mini/raw/main/images/attention_warn.png)
 
 # debian-mini
-Minimal Debian installs
-
+Minimal *Debian* preseed install on USB disk (*Ventoy*: headless, dwm, Xfce, LXQt, KDE; nonfree-netinst-cd)
+## requirements
+* [Ventoy](https://www.ventoy.net) bootloader
+* **Debian 11** bullseye nonfree ([firmware-11.4.0-amd64-netinst.iso](https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/current/amd64/iso-cd/))
+* *fast* USB drive
+<br><br>
 # folders and files
 *.TAG: sh256sum of debian-net-inst CD to tag repo
 ```
