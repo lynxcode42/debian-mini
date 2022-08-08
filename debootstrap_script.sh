@@ -219,7 +219,8 @@ partion_disk() {
   
   #-- unmount all partitions, if actually mounted
   set +e
-  umount ${DEVICE}*
+  umount  ${DEVICE}* >/dev/null 2>&1
+  swapoff ${DEVICE}* >/dev/null 2>&1
   set -e
 
 	#---- do it -> 1. partion as SWAP; 2. partiton as $ROOT_PART_FS
@@ -294,6 +295,7 @@ server repo:  ${SERVER_REPO}
 
 echo "\$1:#${1}#"
 CURRENT_TIME=`date`
+#-- in CHROOT environment ------------------------------------------------------
 if [ "$CMD_PARAM" == "chroot" ]; then
 	echo -e "\n>>> chrooting ...";
 	PATH=$PATH:/sbin:/usr/sbin
@@ -315,9 +317,13 @@ MAIN::>>> apt update && apt upgrade -y -----------------------------------------
 	CURRENT_TIME=`date`
 	echo -e "\n\n[====CHROOT: debootstrap_script.sh >>> END_TIME:$CURRENT_TIME ====]\n"
 	exit 0
+#-- in host environment --------------------------------------------------------
 else
 	echo -e "\n\n[==== debootstrap_script.sh >>> START_TIME:$CURRENT_TIME ====]\n"
 
+	echo "MAIN::>>> apt update #-> update cd package list"
+	apt update 
+	
 	instal_required_packages
 	partion_disk
 	mount_chroot
