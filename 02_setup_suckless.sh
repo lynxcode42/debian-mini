@@ -1,4 +1,17 @@
 #!/usr/bin/bash
+#
+# Description: Installs dwm, dmenu, st from suckless.org with patches.
+# Author: lynxcode42
+# Date: 2022.08.10
+# Licence: open source / do as you please
+#-------------------------------------------------------------------------------
+# REQUIRES:
+# - xorg base system
+# - lynxcode42/debian-mini git repo
+#
+# USAGE:
+# $ sudo ./02_setup_suckless.sh
+#-------------------------------------------------------------------------------
 
 BINDIR="$HOME/.local/bin"
 DEBMINIDIR="$HOME/debian-mini"
