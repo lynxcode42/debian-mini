@@ -78,7 +78,7 @@ SYNTH_DEVS="dev sys proc"
 root_uid="xxxx-yyyy-zzzz"
 #-- aditional packages --
 #INST_ADDONS="git neofetch htop"
-INST_ADDONS="git"
+INST_ADDONS="ntfs-3g git htop neofetch sudo"
 #-- required packages --
 INST_BASE="linux-image-amd64 ntp network-manager intel-microcode firmware-linux"
 #-- sources.list --
@@ -207,7 +207,7 @@ partition_disk() {
   set -e
 
 	#---- do it -> 1. partion as SWAP; 2. partiton as $ROOT_PART_FS
-	sgdisk --clear \
+	sgdisk --clear --mbrtogpt \
 		--new 1::${SWAP_PART_SIZE} --typecode=1:8200 --change-name=1:${SWAP_PART_NAME} \
 		--new 2::-0 --typecode=2:${ROOT_PART_FS} --change-name=2:${ROOT_PART_NAME} \
 		${DEVICE}
@@ -309,7 +309,7 @@ UUID=${swap_uid} none           swap    defaults 0 0
 }
 
 generate_ventoy_grub_cfg() {
-	echo -e "\>>> generate_ventoy_grub_cfg(): ...
+	echo -e "\n>>> generate_ventoy_grub_cfg(): ...
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 	#---- mount ventoy partition
   set +e
