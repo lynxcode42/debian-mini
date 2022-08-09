@@ -1,16 +1,30 @@
 #!/usr/bin/bash
-# REQUIRES:
-#	sgdisk (package: gdisk), debootstrap
-# 
 #
+# Description: Script to automatically bootstrap debian 11.
+# Author: lynxcode42
+# Date: 2022.08.10
+# Licence: open source / do as you please
+#-------------------------------------------------------------------------------
+# REQUIRES:
+# (- Ventoy bootloader ->ventoy.net )
+# - debian 11 (bullseye) net-install-nonfree ISO ->debian.org
+# - antix-21  (Group Yorum) ISO ->antixlinux.com
+#	(- sgdisk (package: gdisk), debootstrap )
+#
+# USAGE:
+# $ sudo ./debootstrap_script.sh
+#-------------------------------------------------------------------------------
 
-echo -e "\n\n~~~~ SCRIPT:debootstrap_script.sh ... running ... ~~~~"
+#-- command parameter
+CMD_PARAM=$1
+echo -e "\n\n~~~~ SCRIPT[-${CMD_PARAM}-]:debootstrap_script.sh ... running ... ~~~~"
 
 #==== ERROR handling ===========================================================
 #-- exit script on error
 set -e 
 #set -e -x
 trap 'CATCHERR $?' EXIT
+EXITCODE=$?
 
 CleanUp() {
 	echo -e "\n<<< CleanUp(): ... cleaning up 'umount -R ${ROOT_MOUNT}'  ..."
@@ -22,15 +36,16 @@ CleanUp() {
 }
 
 CATCHERR() {
+  EXITCODE=$1
   trap - EXIT
 	CURRENT_TIME=`date`
 	echo -e "\n[==== CATCHERR() >>> $CURRENT_TIME ====]"
 
-	if [ "$CMD_PARAM" == "" ]; then CleanUp; fi  #-- chroot execution doesn't need to
-	
-  if [ "$?" != "0" ]; then
-		echo -e "\n\n>>> CATCHERR(): An error occured. Script execution STOPPED! error code:$1 <<<"
-		exit $1
+#	if [ "$CMD_PARAM" == "" ]; then CleanUp; fi  #-- chroot execution doesn't need to
+	echo "#${EXITCODE}#"
+  if [ $EXITCODE -ne 0 ]; then
+		echo -e "\n\n>>> CATCHERR(): An error occured. Script execution STOPPED! error code:${EXITCODE} <<<"
+		exit ${EXITCODE}
 	else 
 		echo -e "\n\n>>> CATCHERR(): Script executed successfully. <<<"
 		exit 0
@@ -40,12 +55,12 @@ CATCHERR() {
 #==== CONFIG ===================================================================
 HOSTNAME="mini"
 USERNAME="debi"
-BOOTSTRAP_FILE_TAG="2022-08-05-15-54-bootstrapped.TAG"
-#-- command parameter
-CMD_PARAM=$1
+BOOTSTRAP_FILE_TAG="2022-08-10-42-42-bootstrapped.TAG"
 #-- required packages
 REQUIRED_PACKAGES="gdisk debootstrap"
 #-- repo server
+#-> https://www.debian.org/mirror/list
+#-> sudo netselect-apt -a amd64 -sn -c DE
 SERVER_REPO="http://ftp.halifax.rwth-aachen.de/debian"
 DEB_RELEASE="bullseye"
 DEB_ARCH="amd64"
@@ -54,13 +69,15 @@ SWAP_PART_DEV="/dev/vdb1" #- placebo
 SWAP_PART_SIZE="+1024M"
 SWAP_PART_NAME="STRAP_SWAP"
 SWAP_PART_LABEL="STRAP_swap"
-ROOT_PART_DEV="/dev/vdb2" #- placebo
+ROOT_PART_DEV="/dev/sda2" #- placebo
 ROOT_PART_NAME="STRAP_ROOT"
 ROOT_PART_LABEL="STRAP_root"
 ROOT_PART_FS="8300"  #- ext4 --
 ROOT_MOUNT="/mnt/chroot"
 SYNTH_DEVS="dev sys proc"
+root_uid="xxxx-yyyy-zzzz"
 #-- aditional packages --
+#INST_ADDONS="git neofetch htop"
 INST_ADDONS="git"
 #-- required packages --
 INST_BASE="linux-image-amd64 ntp network-manager intel-microcode firmware-linux"
@@ -78,6 +95,17 @@ HEREDOC
 )
 #-------------------------------------------------------------------------------
 
+
+#==== HELPER functions =========================================================
+_StartTime_() {
+  CURRENT_TIME=`date`
+	echo -e "____TIMESTAMP_START_: ${CURRENT_TIME}____" 
+}
+_EndTime_() {
+  CURRENT_TIME=`date`
+	echo -e "____TIMESTAMP_END___: ${CURRENT_TIME}____" 
+}
+#-------------------------------------------------------------------------------
 
 install_localization() {
   echo -e "\n
@@ -97,15 +125,6 @@ install_localization() {
 	apt install console-setup -y
 	dpkg-reconfigure keyboard-configuration
 
-	_EndTime_
-}
-
-install_addons() {
-  echo -e "\n
-==== INSTALL: additional packages =============================================="
-	_StartTime_
-	echo -e "\n>>> apt install -y $INST_ADDONS"
-	apt install -y $INST_ADDONS
 	_EndTime_
 }
 
@@ -129,38 +148,13 @@ install_base() {
 	_EndTime_
 }
 
-configure_network() {
+install_addons() {
   echo -e "\n
-==== CONFIGURE: network files =================================================="
-	echo -e "\n<<< configure_network(): ... /etc/{hostname, hosts} ..."
-  echo "$HOSTNAME" > $ROOT_MOUNT/etc/hostname
-
-  cat > $ROOT_MOUNT/etc/hosts << HEREDOC
-127.0.0.1 localhost
-127.0.1.1 $HOSTNAME
-
-# The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-HEREDOC
-}
-
-generate_fstab() {
-  echo -e "\n
-==== GENERATE: /etc/fstab ======================================================"
-	echo -e "\n<<< generate_fstab(): ... /etc/fstab: link swap and root ..."
-  
-	swap_uid=`blkid -o value --match-tag UUID ${SWAP_PART_DEV}`
-	root_uid=`blkid -o value --match-tag UUID ${ROOT_PART_DEV}`
-	
-	ETC_FSTAB="\
-# <file system>                           <mount point>  <type>  <options>  <dump>  <pass>
-UUID=${root_uid} /              ext4    defaults,noatime 0 1
-UUID=${swap_uid} none           swap    defaults 0 0
-#tmpfs                                     /tmp           tmpfs   defaults,noatime,mode=1777 0 0
-"
-	echo "$ETC_FSTAB" > $ROOT_MOUNT/etc/fstab
+==== INSTALL: additional packages =============================================="
+	_StartTime_
+	echo -e "\n>>> apt install -y $INST_ADDONS"
+	apt install -y $INST_ADDONS
+	_EndTime_
 }
 
 add_user() {
@@ -176,26 +170,15 @@ add_user() {
   usermod --shell /bin/bash $USERNAME
 }
 
-#==== HELPER functions =========================================================
-_StartTime_() {
-  CURRENT_TIME=`date`
-	echo -e "____TIMESTAMP_START_: ${CURRENT_TIME}____" 
-}
-_EndTime_() {
-  CURRENT_TIME=`date`
-	echo -e "____TIMESTAMP_END___: ${CURRENT_TIME}____" 
-}
-#-------------------------------------------------------------------------------
-
-instal_required_packages() {
-	echo -e "\n<<< instal_required_packages(): ..."
+install_required_packages() {
+	echo -e "\n<<< install_required_packages(): ..."
 	echo -e "\n>>> apt install -y $REQUIRED_PACKAGES"
 	apt install -y $REQUIRED_PACKAGES
 }
 
-partion_disk() {
+partition_disk() {
   echo -e "\n
-==== partion_disk =============================================================="
+==== partition_disk ============================================================"
 	read -p ">>> Which drive should be used for installation? [sdX]: " INSTR
 	#- ALL input chars to lower case
 	DEVICE="/dev/${INSTR,,}"
@@ -257,17 +240,6 @@ mount_chroot() {
   cp -uv ./debootstrap_script.sh ${ROOT_MOUNT}/root/
 }
 
-enter_chroot_env() {
-	echo -e "\n<<< enter_chroot_env(): ... entering chroot environment ..."
-  
-	#-- mount synthetic devices
-	for d in ${SYNTH_DEVS}; do mount --bind /$d ${ROOT_MOUNT}/$d; done
-
-  #-- entering chroot 
-  echo -e ">>> chroot ${ROOT_MOUNT} /root/debootstrap_script_chroot.sh"
-  chroot ${ROOT_MOUNT} /root/debootstrap_script.sh chroot
-}
-
 debootstrap_func() {
   echo -e "\n
 ==== DEBOOTSTRAPPING ==========================================================="
@@ -291,9 +263,82 @@ server repo:  ${SERVER_REPO}
   fi
 }
 
+enter_chroot_env() {
+	echo -e "\n<<< enter_chroot_env(): ... entering chroot environment ..."
+  
+	#-- mount synthetic devices
+	for d in ${SYNTH_DEVS}; do mount --bind /$d ${ROOT_MOUNT}/$d; done
+
+  #-- entering chroot 
+  echo -e ">>> chroot ${ROOT_MOUNT} /root/debootstrap_script_chroot.sh"
+  chroot ${ROOT_MOUNT} /root/debootstrap_script.sh chroot
+}
+
+configure_network() {
+  echo -e "\n
+==== CONFIGURE: network files =================================================="
+	echo -e "\n<<< configure_network(): ... /etc/{hostname, hosts} ..."
+  echo "$HOSTNAME" > $ROOT_MOUNT/etc/hostname
+
+  cat > $ROOT_MOUNT/etc/hosts << HEREDOC
+127.0.0.1 localhost
+127.0.1.1 $HOSTNAME
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+HEREDOC
+}
+
+generate_fstab() {
+  echo -e "\n
+==== GENERATE: /etc/fstab ======================================================"
+	echo -e "\n<<< generate_fstab(): ... /etc/fstab: link swap and root ..."
+  
+	swap_uid=`blkid -o value --match-tag UUID ${SWAP_PART_DEV}`
+	root_uid=`blkid -o value --match-tag UUID ${ROOT_PART_DEV}`
+	
+	ETC_FSTAB="\
+# <file system>                           <mount point>  <type>  <options>  <dump>  <pass>
+UUID=${root_uid} /              ext4    defaults,noatime 0 1
+UUID=${swap_uid} none           swap    defaults 0 0
+#tmpfs                                     /tmp           tmpfs   defaults,noatime,mode=1777 0 0
+"
+	echo "$ETC_FSTAB" > $ROOT_MOUNT/etc/fstab
+}
+
+generate_ventoy_grub_cfg() {
+	echo -e "\>>> generate_ventoy_grub_cfg(): ...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	#---- mount ventoy partition
+  set +e
+  umount  ${ROOT_PART_DEV} >/dev/null 2>&1 
+	set -e
+  VENTOY_MOUNT=$(mktemp -d -p "/mnt")
+  echo -e ">>> temp mount point $VENTOY_MOUNT created."
+  echo -e ">>> mounting ... mount ${ROOT_PART_DEV} ${VENTOY_MOUNT}"
+  mount ${ROOT_PART_DEV} ${VENTOY_MOUNT}
+	
+	mkdir -p "$VENTOY_MOUNT/ventoy/" #-- assert dir exists
+	if [ -f "$VENTOY_MOUNT/ventoy/ventoy_grub.cfg" ]; then
+		#back it up
+		cp -uv "$VENTOY_MOUNT/ventoy/ventoy_grub.cfg" "$VENTOY_MOUNT/ventoy/ventoy_grub-ORIG.cfg"
+	fi
+	
+	#root_uid=`blkid -o value --match-tag UUID ${ROOT_PART_DEV}`
+
+	echo -e ">>> replacing UUID=${root_uid} of root partiton ${ROOT_PART_DEV} in generic grub.cfg ..."
+	echo -e "sed \"s/AAAA-BBBB-CCCC-DDDD-EEEE/${root_uid}/g\" X Y" 
+	sed "s/AAAA-BBBB-CCCC-DDDD-EEEE/${root_uid}/g" \
+"./ventoy_root_dir/ventoy/ventoy_grub.cfg" > "$VENTOY_MOUNT/ventoy/ventoy_grub.cfg"
+	
+	echo -e "
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+}
+
 #----MAIN----MAIN----MAIN----MAIN----MAIN----MAIN----MAIN----MAIN.----MAIN -----
 
-echo "\$1:#${1}#"
 CURRENT_TIME=`date`
 #-- in CHROOT environment ------------------------------------------------------
 if [ "$CMD_PARAM" == "chroot" ]; then
@@ -324,14 +369,18 @@ else
 	echo "MAIN::>>> apt update #-> update cd package list"
 	apt update 
 	
-	instal_required_packages
-	partion_disk
+	install_required_packages
+	partition_disk
 	mount_chroot
 	debootstrap_func
 	enter_chroot_env
+	#...
 	echo -e "MAIN::>>>RETURNED from chroot!"
 	configure_network
 	generate_fstab
+
+	generate_ventoy_grub_cfg
+	
 
 	CURRENT_TIME=`date`
 	echo -e "\n\n[==== debootstrap_script.sh >>> END_TIME:$CURRENT_TIME ====]\n"
