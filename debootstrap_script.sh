@@ -67,11 +67,11 @@ DEB_ARCH="amd64"
 #-- partioning parameters --
 SWAP_PART_DEV="/dev/vdb1" #- placebo
 SWAP_PART_SIZE="+1024M"
-SWAP_PART_NAME="STRAP_SWAP"
-SWAP_PART_LABEL="STRAP_swap"
+SWAP_PART_NAME="STR_SWAP"
+SWAP_PART_LABEL="STR_swap"
 ROOT_PART_DEV="/dev/sda2" #- placebo
-ROOT_PART_NAME="STRAP_ROOT"
-ROOT_PART_LABEL="STRAP_root"
+ROOT_PART_NAME="STR_ROOT"
+ROOT_PART_LABEL="STR_root"
 ROOT_PART_FS="8300"  #- ext4 --
 ROOT_MOUNT="/mnt/chroot"
 SYNTH_DEVS="dev sys proc"
