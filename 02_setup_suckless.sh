@@ -20,7 +20,7 @@ GITDIRTAG="d490a35d36030592839f24e468a5b818c919943967012037d6ab3d65d030ef7f.TAG"
 echo -e "======================================================================="
 echo -e "02_setup_suckless.sh"
 echo -e "======================================================================="
-echo -e "[_BEGIN_] >>> :" `date` "\n"
+echo -e "[_BEGIN_] >>> :" $(date "+%d>> %T <<") "\n"
 
 
 echo -e "\n[ 00 ]==== check git lynxcode42/debian-mini exists =================="
@@ -75,7 +75,7 @@ EOF
 
 
 echo -e "_______________________________________________________________________"
-echo -e "\n[_END___] <<< :" `date`
+echo -e "\n[_END___] <<< :" $(date "+%d>> %T <<")
 echo -e "_______________________________________________________________________"
 echo -e "\n\nFinished all setups. Please make a clean REBOOT before usage."
 echo -e "Have fun. cya.\n\n"

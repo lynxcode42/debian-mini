@@ -38,7 +38,7 @@ CleanUp() {
 CATCHERR() {
   EXITCODE=$1
   trap - EXIT
-	CURRENT_TIME=`date`
+	CURRENT_TIME=$(date "+%d>> %T <<")
 	echo -e "\n[==== CATCHERR() >>> $CURRENT_TIME ====]"
 
 #	if [ "$CMD_PARAM" == "" ]; then CleanUp; fi  #-- chroot execution doesn't need to
@@ -98,11 +98,11 @@ HEREDOC
 
 #==== HELPER functions =========================================================
 _StartTime_() {
-  CURRENT_TIME=`date`
+  CURRENT_TIME=$(date "+%d>> %T <<")
 	echo -e "____TIMESTAMP_START_: ${CURRENT_TIME}____" 
 }
 _EndTime_() {
-  CURRENT_TIME=`date`
+  CURRENT_TIME=$(date "+%d>> %T <<")
 	echo -e "____TIMESTAMP_END___: ${CURRENT_TIME}____" 
 }
 #-------------------------------------------------------------------------------
@@ -339,7 +339,7 @@ generate_ventoy_grub_cfg() {
 
 #----MAIN----MAIN----MAIN----MAIN----MAIN----MAIN----MAIN----MAIN.----MAIN -----
 
-CURRENT_TIME=`date`
+CURRENT_TIME=$(date "+%d>> %T <<")
 #-- in CHROOT environment ------------------------------------------------------
 if [ "$CMD_PARAM" == "chroot" ]; then
 	echo -e "\n>>> chrooting ...";
@@ -359,7 +359,7 @@ MAIN::>>> apt update && apt upgrade -y -----------------------------------------
 	install_addons
 	add_user
 	
-	CURRENT_TIME=`date`
+	CURRENT_TIME=$(date "+%d>> %T <<")
 	echo -e "\n\n[====CHROOT: debootstrap_script.sh >>> END_TIME:$CURRENT_TIME ====]\n"
 	exit 0
 #-- in host environment --------------------------------------------------------
@@ -382,7 +382,7 @@ else
 	generate_ventoy_grub_cfg
 	
 
-	CURRENT_TIME=`date`
+	CURRENT_TIME=$(date "+%d>> %T <<")
 	echo -e "\n\n[==== debootstrap_script.sh >>> END_TIME:$CURRENT_TIME ====]\n"
 	exit 0
 fi
