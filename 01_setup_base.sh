@@ -1,4 +1,17 @@
 #!/usr/bin/bash
+#
+# Description: Installs xorg base and sound system without any windows manager.
+#              Additional packages: mc, librewolf, neovim and some dracula theming.
+# Author: lynxcode42
+# Date: 2022.08.10
+# Licence: open source / do as you please
+#-------------------------------------------------------------------------------
+# REQUIRES:
+# - lynxcode42/debian-mini git repo
+#
+# USAGE:
+# $ ./01_setup_base.sh
+#-------------------------------------------------------------------------------
 
 USER=`whoami`
 DEBMINIDIR="$HOME/debian-mini"
