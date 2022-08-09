@@ -46,6 +46,7 @@ cd ../st && make clean
 make
 
 echo -e "\n-- copying binaries --"
+mkdir -p ${BINDIR}
 yes | cp -pfv ${DEBMINIDIR}/suckless/st/st ${BINDIR}
 yes | cp -pfv ${DEBMINIDIR}/suckless/dmenu/{dmenu,dmenu_path,dmenu_run,stest} ${BINDIR}
 yes | cp -pfv ${DEBMINIDIR}/suckless/dwm/dwm ${BINDIR}
