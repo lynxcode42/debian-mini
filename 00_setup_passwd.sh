@@ -1,4 +1,17 @@
 #!/usr/bin/bash
+#
+# Description: Changes root and user passwords (default: r00tme).
+# Author: lynxcode42
+# Date: 2022.08.10
+# Licence: open source / do as you please
+#-------------------------------------------------------------------------------
+# REQUIRES:
+# - unattended install with ventoy_root_dir/ventoy/scripts/preseed_bull_DE.cfg
+#   or ventoy_root_dir/ventoy/scripts/preseed_bull_EN.cfg
+#
+# USAGE:
+# $ sudo ./00_setup_passwd.sh
+#-------------------------------------------------------------------------------
 
 USER=`whoami`
 DEBMINIDIR="$HOME/debian-mini"
@@ -25,8 +38,8 @@ echo -e "\n-- change $USER pwd (r00tme)--:"; \
 echo -e "passwd $USER >>>"; \
 passwd $USER && \
 echo -e "\n-- add user $USER to sudo --"; \
-echo -e "apt install sudo -y && usermod -aG sudo $USER"; \
-apt install sudo -y && /sbin/usermod -aG sudo $USER; \
+echo -e "usermod -aG sudo $USER"; \
+/sbin/usermod -aG sudo $USER; \
 '
 RET=$?
 if [ $RET -eq 0  ]; then 
