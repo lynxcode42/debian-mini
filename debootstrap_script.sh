@@ -13,6 +13,7 @@
 #
 # USAGE:
 # $ sudo ./debootstrap_script.sh
+# $ sudo ./debootstrap_script.sh recover  #-- eg. in case of network failure
 #-------------------------------------------------------------------------------
 
 #-- command parameter
@@ -183,6 +184,35 @@ partition_disk() {
 	#- ALL input chars to lower case
 	DEVICE="/dev/${INSTR,,}"
 
+	SWAP_PART_DEV=${DEVICE}1
+	ROOT_PART_DEV=${DEVICE}2
+	
+	RET=42
+
+	if [ "$CMD_PARAM" == "recover" ]; then
+		echo ">>> recover option requested ..."
+		echo ">>> check if $ROOT_PART_DEV is already mounted ..."
+		#---- mount root
+		set +e
+		RET=`mount |grep ${ROOT_PART_DEV}`
+		if [ "$RET" != "" ]; then
+			echo ">>> ALREADY MOUNTED: mount ${ROOT_PART_DEV} ${ROOT_MOUNT}"
+			RET=0
+		else
+			echo ">>> trying ... mount ${ROOT_PART_DEV} ${ROOT_MOUNT}"
+			mount ${ROOT_PART_DEV} ${ROOT_MOUNT}
+			if [ $? -eq 0 ]; then RET=0; fi
+		fi
+		set -e
+	fi
+	
+	if [ $RET -eq 0 ]; then
+		echo ">>> NO re-paritioning needed. Trying to recover ..."
+		return 0
+	else
+		echo ">>> Can't recover as requested. ${ROOT_PART_DEV} will be re-partionioned!!!"
+	fi
+
 	sgdisk -p  ${DEVICE}
 	RET=$?
 
@@ -211,9 +241,6 @@ partition_disk() {
 		--new 1::${SWAP_PART_SIZE} --typecode=1:8200 --change-name=1:${SWAP_PART_NAME} \
 		--new 2::-0 --typecode=2:${ROOT_PART_FS} --change-name=2:${ROOT_PART_NAME} \
 		${DEVICE}
-	
-	SWAP_PART_DEV=${DEVICE}1
-	ROOT_PART_DEV=${DEVICE}2
 	
 	#---- create file systems
 	mkswap -L ${SWAP_PART_LABEL} ${SWAP_PART_DEV}
