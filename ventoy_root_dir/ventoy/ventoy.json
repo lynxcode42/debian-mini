@@ -1,7 +1,7 @@
 {
     "auto_install": [
         {
-            "image": "/_ISOs_vrventoy/deibian-firmware-11.4.0-amd64-netinst.iso",
+            "image": "/_ISOs_vrventoy/debian-firmware-11.4.0-amd64-netinst.iso",
             "template": [
                 "/ventoy/scripts/preseed_bull_DE.cfg",
                 "/ventoy/scripts/preseed_bull_EN.cfg"
@@ -15,7 +15,7 @@
       "color": "red",
       "tips": [
           {
-            "image": "/_ISOs_vrventoy/deibian-firmware-11.4.0-amd64-netinst.iso",
+            "image": "/_ISOs_vrventoy/debian-firmware-11.4.0-amd64-netinst.iso",
             "tip": "ATTENTION: If using automated install mode the whole disk which matches the preseed config will be wipeout !!!"
           }  
       ]
