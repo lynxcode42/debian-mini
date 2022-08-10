@@ -10,7 +10,7 @@
 #   or ventoy_root_dir/ventoy/scripts/preseed_bull_EN.cfg
 #
 # USAGE:
-# $ sudo ./00_setup_passwd.sh
+# $ ./00_setup_passwd.sh
 #-------------------------------------------------------------------------------
 
 USER=`whoami`
