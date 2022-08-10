@@ -78,7 +78,7 @@ SYNTH_DEVS="dev sys proc"
 root_uid="xxxx-yyyy-zzzz"
 #-- aditional packages --
 #INST_ADDONS="git neofetch htop"
-INST_ADDONS="ntfs-3g git htop neofetch sudo"
+INST_ADDONS="ntfs-3g git htop neofetch sudo p7zip-full"
 #-- required packages --
 INST_BASE="linux-image-amd64 ntp network-manager intel-microcode firmware-linux"
 #-- sources.list --
