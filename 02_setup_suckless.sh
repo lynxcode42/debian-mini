@@ -10,7 +10,7 @@
 # - lynxcode42/debian-mini git repo
 #
 # USAGE:
-# $ sudo ./02_setup_suckless.sh
+# $ ./02_setup_suckless.sh #!!! not as sudo or root
 #-------------------------------------------------------------------------------
 
 BINDIR="$HOME/.local/bin"
